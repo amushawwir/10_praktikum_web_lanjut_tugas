@@ -8,6 +8,8 @@ use Illuminate\Http\Request;
 use App\Models\Mahasiswa_Matakuliah;
 use App\Models\Matakuliah;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
+use Barryvdh\DomPDF\Facade as PDF;
 
 class MahasiswaController extends Controller
 {
@@ -46,6 +48,10 @@ class MahasiswaController extends Controller
         $mahasiswa->nama = $request->get('Nama');
         $mahasiswa->kelas_id = $request->get("Kelas");
         $mahasiswa->jurusan = $request->get('Jurusan');
+        if ($request->file('foto')) {
+            $image_name         = $request->file('foto')->store('images', 'public');
+            $mahasiswa->foto    = $image_name;
+        }
         $mahasiswa->email = $request->get('Email');
         $mahasiswa->alamat = $request->get('Alamat');
         $mahasiswa->tanggal_lahir = $request->get('Tanggal_Lahir');
@@ -100,6 +106,13 @@ class MahasiswaController extends Controller
         $mahasiswa->tanggal_lahir = $request->get('Tanggal_Lahir');
         $mahasiswa->save();
 
+        if ($request->file('foto')) {
+            if ($mahasiswa->foto && file_exists(storage_path('app/public/' . $mahasiswa->foto))) {
+                Storage::delete('public/' . $mahasiswa->foto);
+            }
+            $mahasiswa->foto    = $request->file('foto')->store('images', 'public');
+        }
+
         $kelas = new Kelas;
         $kelas->id = $request->get('Kelas');
         
@@ -143,5 +156,13 @@ class MahasiswaController extends Controller
         //dd($mhs[0]);
         // Menampilkan nilai
         return view('mahasiswa.nilai', compact('mhs'));
+    }
+
+    public function cetak_nilai($nim)
+    {
+        $mhs = Mahasiswa_MataKuliah::with('matakuliah')->where("mahasiswa_id", $nim)->get();
+        $mhs->mahasiswa = Mahasiswa::with('kelas')->where('nim', $nim)->first();
+        $pdf = PDF::loadview('mahasiswa.cetak_nilai',['mhs' => $mhs]);
+        return $pdf->stream();
     }
 }

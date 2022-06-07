@@ -1,22 +1,25 @@
 @extends('mahasiswa.layout')
 
 @section('content')
-<div class="container mt-5">
-    <div class="row justify-content-center align-items-center">
-        <div class="card" style="width: 24rem;">
-            <div class="card-header">
-                Detail Mahasiswa
+    <div class="container mt-5">
+        <div class="row justify-content-center align-items-center">
+            <div class="card" style="width: 24rem;">
+                <div class="card-header">
+                    Detail Mahasiswa
+                </div>
+                <div class="card-body">
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item"><b>Nim: </b>{{ $Mahasiswa->nim }}</li>
+                        <li class="list-group-item"><b>Nama: </b>{{ $Mahasiswa->nama }}</li>
+                        <li class="list-group-item"><b>Kelas: </b>{{ $Mahasiswa->kelas->nama_kelas }}</li>
+                        <li class="list-group-item"><b>Jurusan: </b>{{ $Mahasiswa->jurusan }}</li>
+                        <li class="list-group-item"><b>Foto: </b><img class="ml-3" width="50%"
+                                src="{{ $Mahasiswa->foto ? asset('storage/' . $Mahasiswa->foto) : asset('storage/images/default.png') }}"
+                                alt="{{ $Mahasiswa->foto }}"></li>
+                    </ul>
+                </div>
+                <a class="btn btn-success mt-3" href="{{ route('mahasiswa.index') }}">Kembali</a>
             </div>
-            <div class="card-body">
-                <ul class="list-group list-group-flush">
-                    <li class="list-group-item"><b>Nim: </b>{{$Mahasiswa->nim}}</li>
-                    <li class="list-group-item"><b>Nama: </b>{{$Mahasiswa->nama}}</li>
-                    <li class="list-group-item"><b>Kelas: </b>{{$Mahasiswa->kelas->nama_kelas}}</li>
-                    <li class="list-group-item"><b>Jurusan: </b>{{$Mahasiswa->jurusan}}</li>
-                </ul>
-            </div>
-            <a class="btn btn-success mt-3" href="{{ route('mahasiswa.index') }}">Kembali</a>
         </div>
     </div>
-</div>
 @endsection
